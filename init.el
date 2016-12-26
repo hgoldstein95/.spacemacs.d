@@ -116,7 +116,7 @@
   (defun latex-build-for-tex ()
     "Run latex build when .tex file is saved."
     (when (string= (file-name-extension buffer-file-name) "tex")
-          (latex/build)))
+      (latex/build)))
   (defun silence ()
     (interactive))
 
@@ -143,4 +143,7 @@
   (define-key evil-normal-state-map (kbd "k") 'evil-previous-visual-line)
   (evil-ex-define-cmd "q[uit]" 'evil-window-delete)
   (define-key evil-motion-state-map [down-mouse-1] 'silence)
-  (define-key evil-motion-state-map [mouse-1] 'silence))
+  (define-key evil-motion-state-map [mouse-1] 'silence)
+
+  ;; Safe local variables
+  (put 'compilation-read-command 'safe-local-variable 'null))
