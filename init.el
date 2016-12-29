@@ -1,5 +1,4 @@
 ;; -*- mode: emacs-lisp -*-
-
 (defun dotspacemacs/layers ()
   (setq-default
    dotspacemacs-distribution 'spacemacs
@@ -71,22 +70,22 @@
    dotspacemacs-major-mode-leader-key ","
    dotspacemacs-major-mode-emacs-leader-key "C-M-m"
    dotspacemacs-distinguish-gui-tab nil
-   dotspacemacs-remap-Y-to-y$ nil
+   dotspacemacs-remap-Y-to-y$ t
    dotspacemacs-retain-visual-state-on-shift t
-   dotspacemacs-visual-line-move-text nil
-   dotspacemacs-ex-substitute-global nil
+   dotspacemacs-visual-line-move-text t
+   dotspacemacs-ex-substitute-global t
    dotspacemacs-default-layout-name "Default"
    dotspacemacs-display-default-layout nil
    dotspacemacs-auto-resume-layouts nil
    dotspacemacs-large-file-size 1
    dotspacemacs-auto-save-file-location 'cache
    dotspacemacs-max-rollback-slots 5
-   dotspacemacs-helm-resize nil
-   dotspacemacs-helm-no-header nil
+   dotspacemacs-helm-resize t
+   dotspacemacs-helm-no-header t
    dotspacemacs-helm-position 'bottom
    dotspacemacs-helm-use-fuzzy 'always
    dotspacemacs-enable-paste-transient-state nil
-   dotspacemacs-which-key-delay 0.4
+   dotspacemacs-which-key-delay 0.6
    dotspacemacs-which-key-position 'bottom
    dotspacemacs-loading-progress-bar t
    dotspacemacs-fullscreen-at-startup nil
@@ -96,31 +95,49 @@
    dotspacemacs-inactive-transparency 90
    dotspacemacs-show-transient-state-title t
    dotspacemacs-show-transient-state-color-guide t
-   dotspacemacs-mode-line-unicode-symbols t
+   dotspacemacs-mode-line-unicode-symbols nil
    dotspacemacs-smooth-scrolling t
    dotspacemacs-line-numbers nil
    dotspacemacs-folding-method 'evil
    dotspacemacs-smartparens-strict-mode nil
-   dotspacemacs-smart-closing-parenthesis nil
+   dotspacemacs-smart-closing-parenthesis t
    dotspacemacs-highlight-delimiters 'all
    dotspacemacs-persistent-server nil
    dotspacemacs-search-tools '("ag" "pt" "ack" "grep")
    dotspacemacs-default-package-repository nil
-   dotspacemacs-whitespace-cleanup nil))
+   dotspacemacs-whitespace-cleanup 'trailing))
 
 (defun dotspacemacs/user-init ()
   (setq ranger-override-dired t))
 
-(defun dotspacemacs/user-config ()
-  ;; Function definitions
-  (defun latex-build-for-tex ()
-    "Run latex build when .tex file is saved."
-    (when (string= (file-name-extension buffer-file-name) "tex")
-      (latex/build)))
-  (defun silence ()
-    (interactive))
+(defun hjg/latex-build ()
+  "Run latex build when .tex file is saved."
+  (interactive)
+  (when (string= (file-name-extension buffer-file-name) "tex")
+    (latex/build)))
 
-  ;; Setup for proof-general
+(defun hjg/rust-test ()
+  (interactive)
+  (save-some-buffers t)
+  (projectile-with-default-dir (projectile-project-root)
+    (async-shell-command "cargo test"))
+  (other-window -1))
+
+(defun dotspacemacs/user-config ()
+  ;; Mode hooks
+  (add-to-list 'auto-mode-alist '("\\.lalrpop$" . rust-mode))
+
+  ;; Key bindings
+  (add-hook 'doc-view-mode-hook 'auto-revert-mode)
+  (add-hook 'before-save-hook 'hjg/latex-build)
+  (define-key evil-normal-state-map (kbd "j") 'evil-next-visual-line)
+  (define-key evil-normal-state-map (kbd "k") 'evil-previous-visual-line)
+  (evil-ex-define-cmd "q[uit]" 'evil-window-delete)
+  (spacemacs/set-leader-keys-for-major-mode 'rust-mode "t" 'hjg/rust-test)
+
+  ;;; === LANGUAGE SPECIFIC SETUP ===
+
+  ;; Setup for coq
   (load "~/.emacs.d/lisp/PG/generic/proof-site")
   (eval-after-load "proof-script"
     '(progn
@@ -133,17 +150,6 @@
          (kbd "<M-up>")
          'proof-undo-last-successful-command)))
 
-  ;; Mode hooks
-  (add-to-list 'auto-mode-alist '("\\.lalrpop$" . rust-mode))
-
-  ;; Key bindings
-  (add-hook 'doc-view-mode-hook 'auto-revert-mode)
-  (add-hook 'before-save-hook 'latex-build-for-tex)
-  (define-key evil-normal-state-map (kbd "j") 'evil-next-visual-line)
-  (define-key evil-normal-state-map (kbd "k") 'evil-previous-visual-line)
-  (evil-ex-define-cmd "q[uit]" 'evil-window-delete)
-  (define-key evil-motion-state-map [down-mouse-1] 'silence)
-  (define-key evil-motion-state-map [mouse-1] 'silence)
-
-  ;; Safe local variables
-  (put 'compilation-read-command 'safe-local-variable 'null))
+  ;; Setup for Javascript
+  (setq js2-mode-show-strict-warnings nil)
+  )
