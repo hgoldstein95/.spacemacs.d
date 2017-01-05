@@ -110,46 +110,5 @@
 (defun dotspacemacs/user-init ()
   (setq ranger-override-dired t))
 
-(defun hjg/latex-build ()
-  "Run latex build when .tex file is saved."
-  (interactive)
-  (when (string= (file-name-extension buffer-file-name) "tex")
-    (latex/build)))
-
-(defun hjg/rust-test ()
-  (interactive)
-  (save-some-buffers t)
-  (projectile-with-default-dir (projectile-project-root)
-    (async-shell-command "cargo test"))
-  (other-window -1))
-
 (defun dotspacemacs/user-config ()
-  ;; Mode hooks
-  (add-to-list 'auto-mode-alist '("\\.lalrpop$" . rust-mode))
-
-  ;; Key bindings
-  (add-hook 'doc-view-mode-hook 'auto-revert-mode)
-  (add-hook 'before-save-hook 'hjg/latex-build)
-  (define-key evil-normal-state-map (kbd "j") 'evil-next-visual-line)
-  (define-key evil-normal-state-map (kbd "k") 'evil-previous-visual-line)
-  (evil-ex-define-cmd "q[uit]" 'evil-window-delete)
-  (spacemacs/set-leader-keys-for-major-mode 'rust-mode "t" 'hjg/rust-test)
-
-  ;;; === LANGUAGE SPECIFIC SETUP ===
-
-  ;; Setup for coq
-  (load "~/.emacs.d/lisp/PG/generic/proof-site")
-  (eval-after-load "proof-script"
-    '(progn
-       (define-key
-         proof-mode-map
-         (kbd "<M-down>")
-         'proof-assert-next-command-interactive)
-       (define-key
-         proof-mode-map
-         (kbd "<M-up>")
-         'proof-undo-last-successful-command)))
-
-  ;; Setup for Javascript
-  (setq js2-mode-show-strict-warnings nil)
-  )
+  (org-babel-load-file "~/.spacemacs.d/config.org"))

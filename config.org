@@ -1,0 +1,76 @@
+#+TITLE: Spacemacs Configuration
+
+* Global Tweaks
+
+I prefer not to jump completely out of the editor when I use =:q=, so now it
+just kills the current window.
+
+#+BEGIN_SRC emacs-lisp
+  (evil-ex-define-cmd "q[uit]" 'evil-window-delete)
+#+END_SRC
+
+I also prefer to see a fill-column when I am editing, so I turn it on for all
+programming and text modes.
+
+#+BEGIN_SRC emacs-lisp
+  (add-hook 'prog-mode-hook 'spacemacs/toggle-fill-column-indicator-on)
+  (add-hook 'text-mode-hook 'spacemacs/toggle-fill-column-indicator-on)
+#+END_SRC
+
+* Evil Mode Modifications
+
+When I have lines wrapped, I want =j= and =k= to move me visually, not actually
+line-wise.
+
+#+BEGIN_SRC emacs-lisp
+  (define-key evil-normal-state-map (kbd "j") 'evil-next-visual-line)
+  (define-key evil-normal-state-map (kbd "k") 'evil-previous-visual-line)
+#+END_SRC
+
+* Language Specific Configuration
+** Rust
+
+I use the =lalrpop= rust package to generate lexers and parsers, so I want to
+open those files in =rust-mode=.
+
+#+BEGIN_SRC emacs-lisp
+  (add-to-list 'auto-mode-alist '("\\.lalrpop$" . rust-mode))
+#+END_SRC
+
+** LaTeX
+
+In order to get the PDF viewer to refresh automatically on build, I use this
+(magic?) hook.
+
+#+BEGIN_SRC emacs-lisp
+  (add-hook 'doc-view-mode-hook 'auto-revert-mode)
+#+END_SRC
+
+** Javascript
+
+I don't like warnings in my javascript files, because the warnings aren't
+particularly useful. (There are issues with externally defined variables always
+generating warnings.
+
+#+BEGIN_SRC emacs-lisp
+  (setq js2-mode-show-strict-warnings nil)
+#+END_SRC
+
+** Coq
+
+Eventually I should move this into its own layer, but this is my config for coq
+and =proof-general-mode=.
+
+#+BEGIN_SRC emacs-lisp
+  (load "~/.emacs.d/lisp/PG/generic/proof-site")
+  (eval-after-load "proof-script"
+    '(progn
+       (define-key
+         proof-mode-map
+         (kbd "<M-down>")
+         'proof-assert-next-command-interactive)
+       (define-key
+         proof-mode-map
+         (kbd "<M-up>")
+         'proof-undo-last-successful-command)))
+#+END_SRC
