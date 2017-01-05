@@ -50,7 +50,7 @@ In order to get the PDF viewer to refresh automatically on build, I use this
 
 I don't like warnings in my javascript files, because the warnings aren't
 particularly useful. (There are issues with externally defined variables always
-generating warnings.
+generating warnings.)
 
 #+BEGIN_SRC emacs-lisp
   (setq js2-mode-show-strict-warnings nil)
