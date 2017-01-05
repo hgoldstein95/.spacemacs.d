@@ -24,6 +24,8 @@
      org
      ranger
      games
+     (theming :variables
+              theming-headings-same-size 'all)
      (shell :variables
             shell-default-height 20
             shell-default-position 'bottom
