@@ -57,11 +57,12 @@
                                 (recents . 2))
    dotspacemacs-startup-buffer-responsive t
    dotspacemacs-scratch-mode 'text-mode
-   dotspacemacs-themes '(material
+   dotspacemacs-themes '(spacemacs-dark
+                         material
                          material-light)
    dotspacemacs-colorize-cursor-according-to-state t
-   dotspacemacs-default-font '("Inconsolata"
-                               :size 20
+   dotspacemacs-default-font '("Droid Sans Mono"
+                               :size 18
                                :weight normal
                                :width normal
                                :powerline-scale 1.1)

@@ -17,6 +17,24 @@ programming and text modes.
   (add-hook 'text-mode-hook 'spacemacs/toggle-fill-column-indicator-on)
 #+END_SRC
 
+When splitting to the right, I rarely want to visit the same file in both
+buffers. I define the interactive function below to split right, focus the right
+window, and then run =helm-mini=.
+
+#+BEGIN_SRC emacs-lisp
+  (defun hjg/split-window-right-and-helm ()
+    (interactive)
+    (split-window-right-and-focus)
+    (helm-mini))
+#+END_SRC
+
+I bind it to =SPC w V= because that is the usual binding for
+=split-window-right-and-focus=.
+
+#+BEGIN_SRC emacs-lisp
+  (spacemacs/set-leader-keys "wV" 'hjg/split-window-right-and-helm)
+#+END_SRC
+
 * Evil Mode Modifications
 
 When I have lines wrapped, I want =j= and =k= to move me visually, not actually
@@ -54,6 +72,21 @@ generating warnings.)
 
 #+BEGIN_SRC emacs-lisp
   (setq js2-mode-show-strict-warnings nil)
+#+END_SRC
+
+** Org
+
+I want my lines to auto-wrap in =org-mode=.
+
+#+BEGIN_SRC emacs-lisp
+  (add-hook 'org-mode-hook 'auto-fill-mode)
+#+END_SRC
+
+I also want to be able to export with beamer, so I set these export-backends.
+
+#+BEGIN_SRC emacs-lisp
+  (with-eval-after-load 'org
+    (setq org-export-backends '(beamer html latex md gfm)))
 #+END_SRC
 
 ** Coq
