@@ -35,16 +35,6 @@ I bind it to =SPC w V= because that is the usual binding for
   (spacemacs/set-leader-keys "wV" 'hjg/split-window-right-and-helm)
 #+END_SRC
 
-* Evil Mode Modifications
-
-When I have lines wrapped, I want =j= and =k= to move me visually, not actually
-line-wise.
-
-#+BEGIN_SRC emacs-lisp
-  (define-key evil-normal-state-map (kbd "j") 'evil-next-visual-line)
-  (define-key evil-normal-state-map (kbd "k") 'evil-previous-visual-line)
-#+END_SRC
-
 * Language Specific Configuration
 ** Rust
 
