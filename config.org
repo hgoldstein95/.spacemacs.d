@@ -72,10 +72,13 @@ I want my lines to auto-wrap in =org-mode=.
   (add-hook 'org-mode-hook 'auto-fill-mode)
 #+END_SRC
 
-I also want to be able to export with beamer, so I set these export-backends.
+I have these settings inside the =with-eval-after-load= block because without
+it, spacemacs would accidentally load the wrong version of =org-mode=.
 
 #+BEGIN_SRC emacs-lisp
   (with-eval-after-load 'org
+    (setq org-directory "~/Org/")
+    (setq org-default-notes-file (concat org-directory "/notes.org"))
     (setq org-export-backends '(beamer html latex md gfm)))
 #+END_SRC
 
