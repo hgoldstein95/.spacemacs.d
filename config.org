@@ -1,4 +1,5 @@
 #+TITLE: Spacemacs Configuration
+#+AUTHOR: Harrison Goldstein
 
 * Global Tweaks
 
@@ -37,7 +38,8 @@
 
 * Spacemacs Configuration
 
-  The following function allows me to open this file from anywhere.
+  The following function allows me to open this configuration file from
+  anywhere.
 
   #+BEGIN_SRC emacs-lisp
   (defun hjg/edit-config-file ()
@@ -102,7 +104,8 @@
    #+END_SRC
 
    I have these settings inside the =with-eval-after-load= block because without
-   it, spacemacs would accidentally load the wrong version of =org-mode=.
+   it, spacemacs would accidentally load the wrong version of =org-mode=. Here I
+   call the previously defind function and set some other variables for org.
 
    #+BEGIN_SRC emacs-lisp
   (with-eval-after-load 'org
@@ -117,8 +120,16 @@
    Eventually I should move this into its own layer, but this is my config for
    coq and =proof-general-mode=.
 
+   First, I load a local version of proof general from my
+   =.spacemacs.d/packages= directory.
+
    #+BEGIN_SRC emacs-lisp
-  (load "~/.emacs.d/lisp/PG/generic/proof-site")
+  (load (concat dotspacemacs-directory "packages/PG/generic/proof-site"))
+   #+END_SRC
+
+   Then I set some keybindings for more easily navigating the interface.
+
+   #+BEGIN_SRC emacs-lisp
   (eval-after-load "proof-script"
     '(progn
        (define-key
