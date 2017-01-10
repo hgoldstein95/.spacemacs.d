@@ -18,8 +18,8 @@
   #+END_SRC
 
   When splitting to the right, I rarely want to visit the same file in both
-  buffers. I define the interactive function below to split right, focus the right
-  window, and then run =helm-mini=.
+  buffers. I define the interactive function below to split right, focus the
+  right window, and then run =helm-mini=.
 
   #+BEGIN_SRC emacs-lisp
   (defun hjg/split-window-right-and-helm ()
@@ -73,8 +73,8 @@
 ** Javascript
 
    I don't like warnings in my javascript files, because the warnings aren't
-   particularly useful. (There are issues with externally defined variables always
-   generating warnings.)
+   particularly useful. (There are issues with externally defined variables
+   always generating warnings.)
 
    #+BEGIN_SRC emacs-lisp
   (setq js2-mode-show-strict-warnings nil)
@@ -114,8 +114,8 @@
 
 ** Coq
 
-   Eventually I should move this into its own layer, but this is my config for coq
-   and =proof-general-mode=.
+   Eventually I should move this into its own layer, but this is my config for
+   coq and =proof-general-mode=.
 
    #+BEGIN_SRC emacs-lisp
   (load "~/.emacs.d/lisp/PG/generic/proof-site")
