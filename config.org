@@ -53,6 +53,15 @@
   (spacemacs/set-leader-keys "fec" 'hjg/edit-config-file)
   #+END_SRC
 
+* Publishing
+
+  I want to be able to use =org-publish= to publish my blog, so this
+  configuration handles that. As of now, I have nothing to publish.
+
+  #+BEGIN_SRC emacs-lisp
+  (setq org-publish-project-alist '())
+  #+END_SRC
+
 * Language Specific Configuration
 ** Rust
 
