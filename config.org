@@ -2,80 +2,96 @@
 
 * Global Tweaks
 
-I prefer not to jump completely out of the editor when I use =:q=, so now it
-just kills the current window.
+  I prefer not to jump completely out of the editor when I use =:q=, so now it
+  just kills the current window.
 
-#+BEGIN_SRC emacs-lisp
+  #+BEGIN_SRC emacs-lisp
   (evil-ex-define-cmd "q[uit]" 'evil-window-delete)
-#+END_SRC
+  #+END_SRC
 
-I also prefer to see a fill-column when I am editing, so I turn it on for all
-programming and text modes.
+  I also prefer to see a fill-column when I am editing, so I turn it on for all
+  programming and text modes.
 
-#+BEGIN_SRC emacs-lisp
+  #+BEGIN_SRC emacs-lisp
   (add-hook 'prog-mode-hook 'spacemacs/toggle-fill-column-indicator-on)
   (add-hook 'text-mode-hook 'spacemacs/toggle-fill-column-indicator-on)
-#+END_SRC
+  #+END_SRC
 
-When splitting to the right, I rarely want to visit the same file in both
-buffers. I define the interactive function below to split right, focus the right
-window, and then run =helm-mini=.
+  When splitting to the right, I rarely want to visit the same file in both
+  buffers. I define the interactive function below to split right, focus the right
+  window, and then run =helm-mini=.
 
-#+BEGIN_SRC emacs-lisp
+  #+BEGIN_SRC emacs-lisp
   (defun hjg/split-window-right-and-helm ()
     (interactive)
     (split-window-right-and-focus)
     (helm-mini))
-#+END_SRC
+  #+END_SRC
 
-I bind it to =SPC w V= because that is the usual binding for
-=split-window-right-and-focus=.
+  I bind it to =SPC w V= because that is the usual binding for
+  =split-window-right-and-focus=.
 
-#+BEGIN_SRC emacs-lisp
+  #+BEGIN_SRC emacs-lisp
   (spacemacs/set-leader-keys "wV" 'hjg/split-window-right-and-helm)
-#+END_SRC
+  #+END_SRC
+
+* Spacemacs Configuration
+
+  The following function allows me to open this file from anywhere.
+
+  #+BEGIN_SRC emacs-lisp
+  (defun hjg/edit-config-file ()
+    (interactive)
+    (find-file (concat dotspacemacs-directory "config.org")))
+  #+END_SRC
+
+  Then, I bind it to =SPC f e c=.
+
+  #+BEGIN_SRC emacs-lisp
+  (spacemacs/set-leader-keys "fec" 'hjg/edit-config-file)
+  #+END_SRC
 
 * Language Specific Configuration
 ** Rust
 
-I use the =lalrpop= rust package to generate lexers and parsers, so I want to
-open those files in =rust-mode=.
+   I use the =lalrpop= rust package to generate lexers and parsers, so I want to
+   open those files in =rust-mode=.
 
-#+BEGIN_SRC emacs-lisp
+   #+BEGIN_SRC emacs-lisp
   (add-to-list 'auto-mode-alist '("\\.lalrpop$" . rust-mode))
-#+END_SRC
+   #+END_SRC
 
 ** LaTeX
 
-In order to get the PDF viewer to refresh automatically on build, I use this
-(magic?) hook.
+   In order to get the PDF viewer to refresh automatically on build, I use this
+   (magic?) hook.
 
-#+BEGIN_SRC emacs-lisp
+   #+BEGIN_SRC emacs-lisp
   (add-hook 'doc-view-mode-hook 'auto-revert-mode)
-#+END_SRC
+   #+END_SRC
 
 ** Javascript
 
-I don't like warnings in my javascript files, because the warnings aren't
-particularly useful. (There are issues with externally defined variables always
-generating warnings.)
+   I don't like warnings in my javascript files, because the warnings aren't
+   particularly useful. (There are issues with externally defined variables always
+   generating warnings.)
 
-#+BEGIN_SRC emacs-lisp
+   #+BEGIN_SRC emacs-lisp
   (setq js2-mode-show-strict-warnings nil)
-#+END_SRC
+   #+END_SRC
 
 ** Org
 
-I want my lines to auto-wrap in =org-mode=.
+   I want my lines to auto-wrap in =org-mode=.
 
-#+BEGIN_SRC emacs-lisp
+   #+BEGIN_SRC emacs-lisp
   (add-hook 'org-mode-hook 'auto-fill-mode)
-#+END_SRC
+   #+END_SRC
 
-This function sets my export configuration for =org-mode=. It puts exported
-files into their own directory (which can be ignored by my VCS).
+   This function sets my export configuration for =org-mode=. It puts exported
+   files into their own directory (which can be ignored by my VCS).
 
-#+BEGIN_SRC emacs-lisp
+   #+BEGIN_SRC emacs-lisp
   (defun hjg/config-export ()
     (defadvice org-export-output-file-name (before org-add-export-dir activate)
       "Modifies org-export to place exported files in a different directory"
@@ -83,25 +99,25 @@ files into their own directory (which can be ignored by my VCS).
         (setq pub-dir "export")
         (when (not (file-directory-p pub-dir))
           (make-directory pub-dir)))))
-#+END_SRC
+   #+END_SRC
 
-I have these settings inside the =with-eval-after-load= block because without
-it, spacemacs would accidentally load the wrong version of =org-mode=.
+   I have these settings inside the =with-eval-after-load= block because without
+   it, spacemacs would accidentally load the wrong version of =org-mode=.
 
-#+BEGIN_SRC emacs-lisp
+   #+BEGIN_SRC emacs-lisp
   (with-eval-after-load 'org
     (hjg/config-export)
     (setq org-directory "~/Org/")
     (setq org-default-notes-file (concat org-directory "/notes.org"))
     (setq org-export-backends '(beamer html latex md gfm)))
-#+END_SRC
+   #+END_SRC
 
 ** Coq
 
-Eventually I should move this into its own layer, but this is my config for coq
-and =proof-general-mode=.
+   Eventually I should move this into its own layer, but this is my config for coq
+   and =proof-general-mode=.
 
-#+BEGIN_SRC emacs-lisp
+   #+BEGIN_SRC emacs-lisp
   (load "~/.emacs.d/lisp/PG/generic/proof-site")
   (eval-after-load "proof-script"
     '(progn
@@ -113,4 +129,4 @@ and =proof-general-mode=.
          proof-mode-map
          (kbd "<M-up>")
          'proof-undo-last-successful-command)))
-#+END_SRC
+   #+END_SRC
