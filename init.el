@@ -19,7 +19,6 @@
      (latex :variables
             latex-build-command "LaTeX")
      markdown
-     markdown
      ocaml
      org
      python
@@ -116,24 +115,4 @@
   (setq ranger-override-dired t))
 
 (defun dotspacemacs/user-config ()
-  (setq gnus-secondary-select-methods
-        '(
-          (nnimap "gmail"
-                  (nnimap-address
-                   "imap.gmail.com")
-                  (nnimap-server-port 993)
-                  (nnimap-stream ssl))
-          ))
-
-  ;; Send email via Gmail:
-  (setq message-send-mail-function 'smtpmail-send-it
-        smtpmail-default-smtp-server "smtp.gmail.com")
-
-  ;; Archive outgoing email in Sent folder on imap.gmail.com:
-  (setq gnus-message-archive-method '(nnimap "imap.gmail.com")
-        gnus-message-archive-group "[Gmail]/Sent Mail")
-
-  ;; store email in ~/gmail directory
-  (setq nnml-directory "~/gmail")
-  (setq message-directory "~/gmail")
   (org-babel-load-file "~/.spacemacs.d/config.org"))
