@@ -7,34 +7,35 @@
    dotspacemacs-configuration-layer-path '()
    dotspacemacs-configuration-layers
    '(
-     ocaml
-     html
-     python
-     rust
-     javascript
-     typescript
-     markdown
-     helm
      auto-completion
      better-defaults
-     emacs-lisp
      common-lisp
-     git
-     markdown
-     org
-     ranger
+     emacs-lisp
      games
-     (theming :variables
-              theming-headings-same-size 'all)
+     git
+     helm
+     html
+     javascript
+     (latex :variables
+            latex-build-command "LaTeX")
+     markdown
+     markdown
+     ocaml
+     org
+     python
+     ranger
+     rust
      (shell :variables
             shell-default-height 20
             shell-default-position 'bottom
             shell-default-shell 'eshell
             shell-enable-smart-eshell t)
      syntax-checking
+     (theming :variables
+              theming-headings-same-size 'all)
+     themes-megapack
+     typescript
      version-control
-     (latex :variables
-            latex-build-command "LaTeX")
      )
    dotspacemacs-additional-packages
    '(
@@ -57,7 +58,8 @@
                                 (recents . 2))
    dotspacemacs-startup-buffer-responsive t
    dotspacemacs-scratch-mode 'text-mode
-   dotspacemacs-themes '(spacemacs-dark
+   dotspacemacs-themes '(flatland
+                         spacemacs-dark
                          material
                          material-light)
    dotspacemacs-colorize-cursor-according-to-state t
@@ -114,4 +116,24 @@
   (setq ranger-override-dired t))
 
 (defun dotspacemacs/user-config ()
+  (setq gnus-secondary-select-methods
+        '(
+          (nnimap "gmail"
+                  (nnimap-address
+                   "imap.gmail.com")
+                  (nnimap-server-port 993)
+                  (nnimap-stream ssl))
+          ))
+
+  ;; Send email via Gmail:
+  (setq message-send-mail-function 'smtpmail-send-it
+        smtpmail-default-smtp-server "smtp.gmail.com")
+
+  ;; Archive outgoing email in Sent folder on imap.gmail.com:
+  (setq gnus-message-archive-method '(nnimap "imap.gmail.com")
+        gnus-message-archive-group "[Gmail]/Sent Mail")
+
+  ;; store email in ~/gmail directory
+  (setq nnml-directory "~/gmail")
+  (setq message-directory "~/gmail")
   (org-babel-load-file "~/.spacemacs.d/config.org"))
