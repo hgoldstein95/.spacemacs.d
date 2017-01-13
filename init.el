@@ -115,4 +115,4 @@
   (setq ranger-override-dired t))
 
 (defun dotspacemacs/user-config ()
-  (org-babel-load-file "~/.spacemacs.d/config.org"))
+  (org-babel-load-file (concat dotspacemacs-directory "config.org")))
