@@ -139,14 +139,13 @@
    Then I set some keybindings for more easily navigating the interface.
 
    #+BEGIN_SRC emacs-lisp
-  (eval-after-load "proof-script"
-    '(progn
-       (define-key
-         proof-mode-map
-         (kbd "<M-down>")
-         'proof-assert-next-command-interactive)
-       (define-key
-         proof-mode-map
-         (kbd "<M-up>")
-         'proof-undo-last-successful-command)))
+   (with-eval-after-load "proof-script"
+   (define-key proof-mode-map (kbd "<M-down>")
+     'proof-assert-next-command-interactive)
+   (define-key proof-mode-map (kbd "<M-up>")
+     'proof-undo-last-successful-command)
+   (define-key proof-mode-map (kbd "M-j")
+     'proof-assert-next-command-interactive)
+   (define-key proof-mode-map (kbd "M-k")
+     'proof-undo-last-successful-command))
    #+END_SRC
