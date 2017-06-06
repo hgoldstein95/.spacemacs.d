@@ -36,6 +36,12 @@
   (spacemacs/set-leader-keys "wV" 'hjg/split-window-right-and-helm)
   #+END_SRC
 
+  I also want to be able to kill a buffer and a window simultaneously.
+
+  #+BEGIN_SRC emacs-lisp
+  (spacemacs/set-leader-keys "dd" 'kill-buffer-and-window)
+  #+END_SRC
+
 * Spacemacs Configuration
 
   The following function allows me to open this configuration file from
@@ -78,7 +84,7 @@
    (magic?) hook.
 
    #+BEGIN_SRC emacs-lisp
-  (add-hook 'doc-view-mode-hook 'auto-revert-mode)
+   (add-hook 'doc-view-mode-hook 'auto-revert-mode)
    #+END_SRC
 
 ** Javascript
@@ -103,13 +109,13 @@
    files into their own directory (which can be ignored by my VCS).
 
    #+BEGIN_SRC emacs-lisp
-  (defun hjg/config-export ()
-    (defadvice org-export-output-file-name (before org-add-export-dir activate)
-      "Modifies org-export to place exported files in a different directory"
-      (when (not pub-dir)
-        (setq pub-dir "export")
-        (when (not (file-directory-p pub-dir))
-          (make-directory pub-dir)))))
+     (defun hjg/config-export ()
+       (defadvice org-export-output-file-name
+         (before org-add-export-dir activate)
+         (when (not pub-dir)
+           (setq pub-dir "export")
+           (when (not (file-directory-p pub-dir))
+             (make-directory pub-dir)))))
    #+END_SRC
 
    I have these settings inside the =with-eval-after-load= block because without
@@ -117,11 +123,23 @@
    call the previously defind function and set some other variables for org.
 
    #+BEGIN_SRC emacs-lisp
-  (with-eval-after-load 'org
-    (hjg/config-export)
-    (setq org-directory "~/Org/")
-    (setq org-default-notes-file (concat org-directory "/notes.org"))
-    (setq org-export-backends '(beamer html latex md gfm)))
+     (defun my-org-confirm-babel-evaluate (lang body)
+       (not (string= lang "dot")))
+     (org-babel-do-load-languages
+      'org-babel-load-languages
+      '((python . t)
+        (shell . t)
+        (octave . t)
+        (dot . t)))
+     (with-eval-after-load 'org
+       (hjg/config-export)
+       (setq org-directory "~/Org/")
+       (setq org-default-notes-file (concat org-directory "/notes.org"))
+       (setq org-export-backends '(beamer html latex md gfm))
+       (setq org-ellipsis "⬎")
+       (setq org-bullets-bullet-list '("▣" "►" "■" "▸" "▪"))
+       (setq org-confirm-babel-evaluate 'my-org-confirm-babel-evaluate)
+       (setq org-babel-python-command "python3"))
    #+END_SRC
 
 ** Coq
@@ -148,4 +166,31 @@
      'proof-assert-next-command-interactive)
    (define-key proof-mode-map (kbd "M-k")
      'proof-undo-last-successful-command))
+   #+END_SRC
+
+** Python
+   #+BEGIN_SRC emacs-lisp
+   (setq python-shell-interpreter "python3")
+   #+END_SRC
+
+** Haskell
+   #+BEGIN_SRC emacs-lisp
+     (add-hook
+      'haskell-mode-hook
+      (lambda ()
+        (add-hook
+         'before-save-hook
+         #'(lambda () (funcall #'hindent-reformat-buffer)) nil t)))
+   #+END_SRC
+
+** Elm
+   #+BEGIN_SRC emacs-lisp
+     (add-hook 'elm-mode-hook
+       (lambda () (add-hook 'before-save-hook #'
+         (lambda () (funcall #'elm-mode-format-buffer)) nil t)))
+   #+END_SRC
+
+** Markdown
+   #+BEGIN_SRC emacs-lisp
+     (add-hook 'markdown-mode-hook 'auto-fill-mode)
    #+END_SRC
