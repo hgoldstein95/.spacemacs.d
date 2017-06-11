@@ -31,6 +31,7 @@
      python
      ranger
      rust
+     semantic
      (shell :variables
             shell-default-height 20
             shell-default-position 'bottom
@@ -123,70 +124,83 @@
   (setq ranger-override-dired t))
 
 (defun dotspacemacs/user-config ()
-  (org-babel-load-file (concat dotspacemacs-directory "config.org")))
-(custom-set-variables
- ;; custom-set-variables was added by Custom.
- ;; If you edit it by hand, you could mess it up, so be careful.
- ;; Your init file should contain only one such instance.
- ;; If there is more than one, they won't work right.
- '(evil-want-Y-yank-to-eol t)
- '(fci-rule-color "#202325")
- '(safe-local-variable-values
-   (quote
-    ((idris-load-packages "base" "contrib")
-     (idris-load-packages quote
-                          ("base" "contrib")))))
- '(vc-annotate-background "#1f2124")
- '(vc-annotate-color-map
-   (quote
-    ((20 . "#ff0000")
-     (40 . "#ff4a52")
-     (60 . "#f6aa11")
-     (80 . "#f1e94b")
-     (100 . "#f5f080")
-     (120 . "#f6f080")
-     (140 . "#41a83e")
-     (160 . "#40b83e")
-     (180 . "#b6d877")
-     (200 . "#b7d877")
-     (220 . "#b8d977")
-     (240 . "#b9d977")
-     (260 . "#93e0e3")
-     (280 . "#72aaca")
-     (300 . "#8996a8")
-     (320 . "#afc4db")
-     (340 . "#cfe2f2")
-     (360 . "#dc8cc3"))))
- '(vc-annotate-very-old-color "#dc8cc3"))
-(custom-set-faces
- ;; custom-set-faces was added by Custom.
- ;; If you edit it by hand, you could mess it up, so be careful.
- ;; Your init file should contain only one such instance.
- ;; If there is more than one, they won't work right.
- '(font-latex-sectioning-0-face ((t (:height 1.0))))
- '(font-latex-sectioning-1-face ((t (:height 1.0))))
- '(font-latex-sectioning-2-face ((t (:height 1.0))))
- '(font-latex-sectioning-3-face ((t (:height 1.0))))
- '(font-latex-sectioning-4-face ((t (:height 1.0))))
- '(font-latex-sectioning-5-face ((t (:height 1.0))))
- '(font-latex-slide-title-face ((t (:height 1.0))))
- '(info-title-1 ((t (:height 1.0))))
- '(info-title-2 ((t (:height 1.0))))
- '(info-title-3 ((t (:height 1.0))))
- '(info-title-4 ((t (:height 1.0))))
- '(markdown-header-face ((t (:height 1.0))))
- '(markdown-header-face-1 ((t (:height 1.0))))
- '(markdown-header-face-2 ((t (:height 1.0))))
- '(markdown-header-face-3 ((t (:height 1.0))))
- '(markdown-header-face-4 ((t (:height 1.0))))
- '(markdown-header-face-5 ((t (:height 1.0))))
- '(markdown-header-face-6 ((t (:height 1.0))))
- '(org-document-title ((t (:height 1.0))))
- '(org-level-1 ((t (:height 1.0))))
- '(org-level-2 ((t (:height 1.0))))
- '(org-level-3 ((t (:height 1.0))))
- '(org-level-4 ((t (:height 1.0))))
- '(org-level-5 ((t (:height 1.0))))
- '(org-level-6 ((t (:height 1.0))))
- '(org-level-7 ((t (:height 1.0))))
- '(org-level-8 ((t (:height 1.0)))))
+  (evil-ex-define-cmd "q[uit]" 'evil-window-delete)
+
+  (add-hook 'prog-mode-hook 'spacemacs/toggle-fill-column-indicator-on)
+  (add-hook 'text-mode-hook 'spacemacs/toggle-fill-column-indicator-on)
+
+  (defun hjg/split-window-right-and-helm ()
+    (interactive)
+    (split-window-right-and-focus)
+    (helm-mini))
+  (spacemacs/set-leader-keys "wV" 'hjg/split-window-right-and-helm)
+
+  (spacemacs/set-leader-keys "dd" 'kill-buffer-and-window)
+
+  ; Rust
+  (add-to-list 'auto-mode-alist
+               '("\\.lalrpop$" . rust-mode))
+
+  ; LaTeX
+  (add-hook 'doc-view-mode-hook 'auto-revert-mode)
+
+  ; Javascript
+  (setq js2-mode-show-strict-warnings nil)
+
+  ; Org
+  (add-hook 'org-mode-hook 'auto-fill-mode)
+  (defun hjg/config-export ()
+    (defadvice org-export-output-file-name
+        (before org-add-export-dir activate)
+      (when (not pub-dir)
+        (setq pub-dir "export")
+        (when (not (file-directory-p pub-dir))
+          (make-directory pub-dir)))))
+  (defun my-org-confirm-babel-evaluate (lang body)
+    (not (string= lang "dot")))
+  (org-babel-do-load-languages 'org-babel-load-languages
+                               '((python . t)
+                                 (shell . t)
+                                 (octave . t)
+                                 (dot . t)))
+  (with-eval-after-load 'org
+    (hjg/config-export)
+    (setq org-directory "~/Org/")
+    (setq org-default-notes-file (concat org-directory "/notes.org"))
+    (setq org-export-backends '(beamer html latex md gfm))
+    (setq org-ellipsis "⬎")
+    (setq org-bullets-bullet-list '("▣" "►" "■" "▸" "▪"))
+    (setq org-confirm-babel-evaluate 'my-org-confirm-babel-evaluate)
+    (setq org-babel-python-command "python3"))
+
+  ; Coq
+  (load (concat dotspacemacs-directory "packages/PG/generic/proof-site"))
+  (with-eval-after-load "proof-script"
+    (define-key proof-mode-map (kbd "<M-down>") 'proof-assert-next-command-interactive)
+    (define-key proof-mode-map (kbd "<M-up>") 'proof-undo-last-successful-command)
+    (define-key proof-mode-map (kbd "M-j") 'proof-assert-next-command-interactive)
+    (define-key proof-mode-map (kbd "M-k") 'proof-undo-last-successful-command))
+
+  ; Python
+  (setq python-shell-interpreter "python3")
+
+  ; Haskell
+  (add-hook 'haskell-mode-hook
+            (lambda ()
+              (add-hook 'before-save-hook
+                        #'(lambda ()
+                            (funcall #'hindent-reformat-buffer))
+                        nil
+                        t)))
+
+  ; Elm
+  (add-hook 'elm-mode-hook
+            (lambda ()
+              (add-hook 'before-save-hook
+                        #'(lambda ()
+                            (funcall #'elm-mode-format-buffer))
+                        nil
+                        t)))
+
+  ; Markdown
+  (add-hook 'markdown-mode-hook 'auto-fill-mode))
