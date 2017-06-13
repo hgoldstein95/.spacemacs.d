@@ -136,6 +136,8 @@
   (spacemacs/set-leader-keys "wV" 'hjg/split-window-right-and-helm)
 
   (spacemacs/set-leader-keys "dd" 'kill-buffer-and-window)
+  
+  (setq fci-always-use-textual-rule t)
 
   ; Rust
   (add-to-list 'auto-mode-alist
