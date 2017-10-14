@@ -6,6 +6,7 @@
    dotspacemacs-configuration-layer-path '()
    dotspacemacs-configuration-layers
    '(
+     ruby
      elm
      yaml
      sql
@@ -31,7 +32,6 @@
      python
      ranger
      rust
-     semantic
      (shell :variables
             shell-default-height 20
             shell-default-position 'bottom
@@ -41,7 +41,8 @@
      (theming :variables
               theming-headings-same-size 'all)
      themes-megapack
-     typescript
+     (typescript :variables
+                 typescript-fmt-on-save t)
      version-control
      )
    dotspacemacs-additional-packages
@@ -121,6 +122,7 @@
    dotspacemacs-whitespace-cleanup 'trailing))
 
 (defun dotspacemacs/user-init ()
+  (setq evil-want-abbrev-expand-on-insert-exit nil)
   (setq ranger-override-dired t))
 
 (defun dotspacemacs/user-config ()
@@ -133,9 +135,30 @@
     (interactive)
     (split-window-right-and-focus)
     (helm-mini))
+
+  (defun hjg/setup-tide-mode ()
+    (interactive)
+    (tide-setup)
+    (flycheck-mode +1)
+    (setq flycheck-check-syntax-automatically '(save mode-enabled))
+    (eldoc-mode +1)
+    (tide-hl-identifier-mode +1)
+    ;; company is an optional dependency. You have to
+    ;; install it separately via package-install
+    ;; `M-x package-install [ret] company`
+    (company-mode +1))
+
   (spacemacs/set-leader-keys "wV" 'hjg/split-window-right-and-helm)
 
   (spacemacs/set-leader-keys "dd" 'kill-buffer-and-window)
+
+  (require 'helm-bookmark)
+
+  ; Coq
+  (load "~/.spacemacs.d/packages/proof-general/generic/proof-site")
+  (with-eval-after-load "proof-script"
+    (define-key proof-mode-map (kbd "<M-down>") 'proof-assert-next-command-interactive)
+    (define-key proof-mode-map (kbd "<M-up>") 'proof-undo-last-successful-command))
 
   ; Rust
   (add-to-list 'auto-mode-alist
@@ -146,6 +169,10 @@
 
   ; Javascript
   (setq js2-mode-show-strict-warnings nil)
+
+  ; Typescript
+  (setq company-tooltip-align-annotations t)
+  (add-hook 'typescript-mode-hook #'hjg/setup-tide-mode)
 
   ; Org
   (add-hook 'org-mode-hook 'auto-fill-mode)
@@ -173,14 +200,6 @@
     (setq org-confirm-babel-evaluate 'my-org-confirm-babel-evaluate)
     (setq org-babel-python-command "python3"))
 
-  ; Coq
-  (load (concat dotspacemacs-directory "packages/PG/generic/proof-site"))
-  (with-eval-after-load "proof-script"
-    (define-key proof-mode-map (kbd "<M-down>") 'proof-assert-next-command-interactive)
-    (define-key proof-mode-map (kbd "<M-up>") 'proof-undo-last-successful-command)
-    (define-key proof-mode-map (kbd "M-j") 'proof-assert-next-command-interactive)
-    (define-key proof-mode-map (kbd "M-k") 'proof-undo-last-successful-command))
-
   ; Python
   (setq python-shell-interpreter "python3")
 
@@ -188,10 +207,8 @@
   (add-hook 'haskell-mode-hook
             (lambda ()
               (add-hook 'before-save-hook
-                        #'(lambda ()
-                            (funcall #'hindent-reformat-buffer))
-                        nil
-                        t)))
+                        (save-excursion
+                          'hindent-reformat-buffer))))
 
   ; Elm
   (add-hook 'elm-mode-hook
