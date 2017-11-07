@@ -6,6 +6,7 @@
    dotspacemacs-configuration-layer-path '()
    dotspacemacs-configuration-layers
    '(
+     racket
      ruby
      elm
      yaml
@@ -143,15 +144,12 @@
     (setq flycheck-check-syntax-automatically '(save mode-enabled))
     (eldoc-mode +1)
     (tide-hl-identifier-mode +1)
-    ;; company is an optional dependency. You have to
-    ;; install it separately via package-install
-    ;; `M-x package-install [ret] company`
     (company-mode +1))
 
   (spacemacs/set-leader-keys "wV" 'hjg/split-window-right-and-helm)
 
   (spacemacs/set-leader-keys "dd" 'kill-buffer-and-window)
-  
+
   (setq fci-always-use-textual-rule t)
 
   (require 'helm-bookmark)
@@ -168,6 +166,7 @@
 
   ; LaTeX
   (add-hook 'doc-view-mode-hook 'auto-revert-mode)
+  (setq LaTeX-command "latex -shell-escape")
 
   ; Javascript
   (setq js2-mode-show-strict-warnings nil)
@@ -204,13 +203,6 @@
 
   ; Python
   (setq python-shell-interpreter "python3")
-
-  ; Haskell
-  (add-hook 'haskell-mode-hook
-            (lambda ()
-              (add-hook 'before-save-hook
-                        (save-excursion
-                          'hindent-reformat-buffer))))
 
   ; Elm
   (add-hook 'elm-mode-hook
