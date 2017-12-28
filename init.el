@@ -67,10 +67,11 @@
                                 (recents . 2))
    dotspacemacs-startup-buffer-responsive t
    dotspacemacs-scratch-mode 'text-mode
-   dotspacemacs-themes '(flatland
+   dotspacemacs-themes '(solarized-light
+                         material
+                         flatland
                          spacemacs-light
                          spacemacs-dark
-                         material
                          material-light)
    dotspacemacs-colorize-cursor-according-to-state t
    dotspacemacs-default-font '("Droid Sans Mono"
@@ -167,6 +168,10 @@
   ; LaTeX
   (add-hook 'doc-view-mode-hook 'auto-revert-mode)
   (setq LaTeX-command "latex -shell-escape")
+
+  ; P4
+  (add-to-list 'auto-mode-alist
+               '("\\.p4$" . c++-mode))
 
   ; Javascript
   (setq js2-mode-show-strict-warnings nil)
