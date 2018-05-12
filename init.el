@@ -13,7 +13,7 @@
      sql
      idris
      (haskell :variables
-              haskell-process-type 'stack-ghci)
+              haskell-completion-backend 'intero)
      graphviz
      octave
      auto-completion
@@ -74,8 +74,8 @@
                          spacemacs-dark
                          material-light)
    dotspacemacs-colorize-cursor-according-to-state t
-   dotspacemacs-default-font '("Droid Sans Mono"
-                               :size 18
+   dotspacemacs-default-font '("Inconsolata"
+                               :size 22
                                :weight normal
                                :width normal
                                :powerline-scale 1.1)
@@ -219,4 +219,8 @@
                         t)))
 
   ; Markdown
-  (add-hook 'markdown-mode-hook 'auto-fill-mode))
+  (add-hook 'markdown-mode-hook 'auto-fill-mode)
+
+  ; Haskell
+  (with-eval-after-load 'intero
+    (flycheck-add-next-checker 'intero '(warning . haskell-hlint))))
