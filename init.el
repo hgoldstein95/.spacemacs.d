@@ -49,6 +49,7 @@
    dotspacemacs-additional-packages
    '(
      pug-mode
+     vue-mode
      )
    dotspacemacs-frozen-packages '()
    dotspacemacs-excluded-packages '(evil-search-highlight-persist)
@@ -175,6 +176,8 @@
 
   ; Javascript
   (setq js2-mode-show-strict-warnings nil)
+  (setq-default js2-basic-offset 2)
+  (setq-default js-indent-level 2)
 
   ; Typescript
   (setq company-tooltip-align-annotations t)
