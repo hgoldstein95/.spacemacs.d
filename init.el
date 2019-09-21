@@ -17,9 +17,7 @@
      octave
      auto-completion
      better-defaults
-     common-lisp
      emacs-lisp
-     games
      git
      helm
      html
@@ -29,8 +27,8 @@
      markdown
      ocaml
      org
-     ranger
-     rust
+     (rust :variables
+           rust-format-on-save t)
      (shell :variables
             shell-default-height 20
             shell-default-position 'bottom
@@ -43,6 +41,7 @@
      version-control
      )
    dotspacemacs-frozen-packages '()
+   dotspacemacs-additional-packages '(helm-rg)
    dotspacemacs-excluded-packages '(evil-search-highlight-persist)
    dotspacemacs-install-packages 'used-only))
 
@@ -111,7 +110,7 @@
    dotspacemacs-smart-closing-parenthesis nil
    dotspacemacs-highlight-delimiters 'all
    dotspacemacs-persistent-server nil
-   dotspacemacs-search-tools '("ag" "pt" "ack" "grep")
+   dotspacemacs-search-tools '("rg" "ag" "pt" "ack" "grep")
    dotspacemacs-default-package-repository nil
    dotspacemacs-whitespace-cleanup 'trailing))
 
@@ -126,14 +125,20 @@
   (add-hook 'prog-mode-hook 'spacemacs/toggle-fill-column-indicator-on)
   (add-hook 'text-mode-hook 'spacemacs/toggle-fill-column-indicator-on)
 
+  (setq projectile-enable-caching t)
+
+  (setq custom-file "~/.spacemacs.d/custom.el")
+  (load custom-file 'noerror)
+
   (defun hjg/split-window-right-and-helm ()
     (interactive)
     (split-window-right-and-focus)
     (helm-mini))
 
   (spacemacs/set-leader-keys "wV" 'hjg/split-window-right-and-helm)
-
   (spacemacs/set-leader-keys "dd" 'kill-buffer-and-window)
+  (spacemacs/set-leader-keys "p*" 'helm-projectile-rg)
+  (spacemacs/set-leader-keys "," 'comment-or-uncomment-region)
 
   (setq fci-always-use-textual-rule t)
 
@@ -169,15 +174,21 @@
                                  (dot . t)))
   (with-eval-after-load 'org
     (hjg/config-export)
-    (setq org-directory "~/Org/")
-    (setq org-default-notes-file (concat org-directory "/notes.org"))
     (setq org-export-backends '(beamer html latex md gfm))
     (setq org-ellipsis "⬎")
+    (setq org-directory "~/org")
     (setq org-bullets-bullet-list '("▣" "►" "■" "▸" "▪"))
-    (setq org-confirm-babel-evaluate 'my-org-confirm-babel-evaluate))
+    (setq org-confirm-babel-evaluate 'my-org-confirm-babel-evaluate)
+    (setq org-agenda-files (list "~/org" "~/Research/notes")))
 
   ; Markdown
   (add-hook 'markdown-mode-hook 'auto-fill-mode)
+
+  ; Rust
+  (defun generate-rusty-tags ()
+    (interactive)
+    (shell-command "rusty-tags -O TAGS emacs"))
+  (spacemacs/set-leader-keys-for-major-mode 'rust-mode "G" 'generate-rusty-tags)
 
   ; Haskell
   (spacemacs/set-leader-keys-for-major-mode 'haskell-mode "f" 'hindent-reformat-buffer)
