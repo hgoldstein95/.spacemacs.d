@@ -58,15 +58,16 @@
                                 (recents . 4))
    dotspacemacs-startup-buffer-responsive t
    dotspacemacs-scratch-mode 'text-mode
-   dotspacemacs-themes '(solarized-light
+   dotspacemacs-themes '(zenburn
+                         solarized-light
                          material
                          flatland
                          spacemacs-light
                          spacemacs-dark
                          material-light)
    dotspacemacs-colorize-cursor-according-to-state t
-   dotspacemacs-default-font '("Fira Code"
-                               :size 18
+   dotspacemacs-default-font '("Cascadia Code"
+                               :size 20
                                :weight normal
                                :width normal
                                :powerline-scale 1.1)
@@ -116,7 +117,9 @@
 
 (defun dotspacemacs/user-init ()
   (setq evil-want-abbrev-expand-on-insert-exit nil)
-  (setq ranger-override-dired t))
+  (setq ranger-override-dired t)
+  (setq custom-file "~/.spacemacs.d/custom.el")
+  (load custom-file 'noerror))
 
 (defun dotspacemacs/user-config ()
   (evil-ex-define-cmd "q[uit]" 'evil-window-delete)
@@ -126,9 +129,6 @@
   (add-hook 'text-mode-hook 'spacemacs/toggle-fill-column-indicator-on)
 
   (setq projectile-enable-caching t)
-
-  (setq custom-file "~/.spacemacs.d/custom.el")
-  (load custom-file 'noerror)
 
   (defun hjg/split-window-right-and-helm ()
     (interactive)
