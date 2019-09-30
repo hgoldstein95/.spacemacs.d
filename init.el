@@ -9,6 +9,7 @@
      (c-c++ :variables
             c-c++-default-mode-for-headers 'c++-mode)
      csv
+     dap
      yaml
      sql
      (haskell :variables
@@ -24,11 +25,13 @@
      javascript
      (latex :variables
             latex-build-command "LaTeX")
+     lsp
      markdown
      ocaml
      org
      (rust :variables
-           rust-format-on-save t)
+           rust-format-on-save t
+           rust-backend 'lsp)
      (shell :variables
             shell-default-height 20
             shell-default-position 'bottom
@@ -66,8 +69,8 @@
                          spacemacs-dark
                          material-light)
    dotspacemacs-colorize-cursor-according-to-state t
-   dotspacemacs-default-font '("Cascadia Code"
-                               :size 20
+   dotspacemacs-default-font '("Fira Code"
+                               :size 14.0
                                :weight normal
                                :width normal
                                :powerline-scale 1.1)
@@ -104,6 +107,7 @@
    dotspacemacs-show-transient-state-title t
    dotspacemacs-show-transient-state-color-guide t
    dotspacemacs-mode-line-unicode-symbols nil
+   dotspacemacs-mode-line-theme '(spacemacs :separator wave :separator-scale 1.5)
    dotspacemacs-smooth-scrolling t
    dotspacemacs-line-numbers nil
    dotspacemacs-folding-method 'evil
@@ -119,7 +123,8 @@
   (setq evil-want-abbrev-expand-on-insert-exit nil)
   (setq ranger-override-dired t)
   (setq custom-file "~/.spacemacs.d/custom.el")
-  (load custom-file 'noerror))
+  (load custom-file 'noerror)
+  (setq package-check-signature nil))
 
 (defun dotspacemacs/user-config ()
   (evil-ex-define-cmd "q[uit]" 'evil-window-delete)
@@ -139,13 +144,6 @@
   (spacemacs/set-leader-keys "dd" 'kill-buffer-and-window)
   (spacemacs/set-leader-keys "p*" 'helm-projectile-rg)
   (spacemacs/set-leader-keys "," 'comment-or-uncomment-region)
-
-  (setq fci-always-use-textual-rule t)
-
-  (require 'helm-bookmark)
-
-  (setq flycheck-gometalinter-deadline "20s")
-  (setq flycheck-gometalinter-fast nil)
 
   ; Coq
   (load "~/.spacemacs.d/packages/proof-general/generic/proof-site")
@@ -193,4 +191,12 @@
   ; Haskell
   (spacemacs/set-leader-keys-for-major-mode 'haskell-mode "f" 'hindent-reformat-buffer)
   (with-eval-after-load 'intero
-    (flycheck-add-next-checker 'intero '(warning . haskell-hlint))))
+    (flycheck-add-next-checker 'intero '(warning . haskell-hlint)))
+
+  ; C++
+  (spacemacs/set-leader-keys-for-major-mode 'c++-mode "," 'compile)
+  (spacemacs/set-leader-keys-for-major-mode 'c++-mode "f" 'clang-format-buffer)
+  (add-hook 'c++-mode-hook (lambda () (setq compilation-read-command nil)))
+
+  ; Emacs Lisp
+  (spacemacs/set-leader-keys-for-major-mode 'emacs-lisp-mode "b" 'eval-buffer))

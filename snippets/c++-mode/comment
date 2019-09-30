@@ -1,0 +1,7 @@
+# -*- mode: snippet -*-
+# name: c++ comment
+# key: /*
+# --
+/**
+ * $0
+ */
