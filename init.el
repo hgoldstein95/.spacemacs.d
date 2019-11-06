@@ -5,7 +5,8 @@
    dotspacemacs-ask-for-lazy-installation t
    dotspacemacs-configuration-layer-path '()
    dotspacemacs-configuration-layers
-   '(
+   '(python
+     ruby
      (c-c++ :variables
             c-c++-default-mode-for-headers 'c++-mode)
      csv
@@ -37,10 +38,12 @@
             shell-default-position 'bottom
             shell-default-shell 'eshell
             shell-enable-smart-eshell t)
+     spotify
      syntax-checking
      (theming :variables
               theming-headings-same-size 'all)
      themes-megapack
+     twitter
      version-control
      )
    dotspacemacs-frozen-packages '()
@@ -115,7 +118,7 @@
    dotspacemacs-smart-closing-parenthesis nil
    dotspacemacs-highlight-delimiters 'all
    dotspacemacs-persistent-server nil
-   dotspacemacs-search-tools '("rg" "ag" "pt" "ack" "grep")
+   dotspacemacs-search-tools '("ag" "pt" "ack" "grep")
    dotspacemacs-default-package-repository nil
    dotspacemacs-whitespace-cleanup 'trailing))
 
@@ -156,6 +159,7 @@
   (setq LaTeX-command "latex -shell-escape")
 
   ; Org
+  (spacemacs/set-leader-keys-for-major-mode 'org-mode "el" 'org-latex-export-to-pdf)
   (add-hook 'org-mode-hook 'auto-fill-mode)
   (defun hjg/config-export ()
     (defadvice org-export-output-file-name
@@ -196,7 +200,11 @@
   ; C++
   (spacemacs/set-leader-keys-for-major-mode 'c++-mode "," 'compile)
   (spacemacs/set-leader-keys-for-major-mode 'c++-mode "f" 'clang-format-buffer)
-  (add-hook 'c++-mode-hook (lambda () (setq compilation-read-command nil)))
+  (add-hook 'c++-mode-hook
+            (lambda ()
+              (setq compilation-read-command nil)
+              (setq flycheck-clang-language-standard "c++17")
+              (add-hook 'after-save-hook 'clang-format-buffer nil 'make-it-local)))
 
   ; Emacs Lisp
   (spacemacs/set-leader-keys-for-major-mode 'emacs-lisp-mode "b" 'eval-buffer))
