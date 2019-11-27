@@ -8,13 +8,14 @@
    '(python
      ruby
      (c-c++ :variables
+            c-c++-backend 'lsp-clangd
             c-c++-default-mode-for-headers 'c++-mode)
      csv
      dap
      yaml
      sql
      (haskell :variables
-              haskell-completion-backend 'intero)
+              haskell-completion-backend 'company-gchi)
      graphviz
      octave
      auto-completion
@@ -42,12 +43,11 @@
      syntax-checking
      (theming :variables
               theming-headings-same-size 'all)
-     themes-megapack
      twitter
      version-control
      )
    dotspacemacs-frozen-packages '()
-   dotspacemacs-additional-packages '(helm-rg)
+   dotspacemacs-additional-packages '(helm-rg base16-theme)
    dotspacemacs-excluded-packages '(evil-search-highlight-persist)
    dotspacemacs-install-packages 'used-only))
 
@@ -64,7 +64,8 @@
                                 (recents . 4))
    dotspacemacs-startup-buffer-responsive t
    dotspacemacs-scratch-mode 'text-mode
-   dotspacemacs-themes '(zenburn
+   dotspacemacs-themes '(base16-nord
+                         zenburn
                          solarized-light
                          material
                          flatland
@@ -72,7 +73,7 @@
                          spacemacs-dark
                          material-light)
    dotspacemacs-colorize-cursor-according-to-state t
-   dotspacemacs-default-font '("Fira Code"
+   dotspacemacs-default-font '("Noto Mono"
                                :size 14.0
                                :weight normal
                                :width normal
@@ -149,10 +150,10 @@
   (spacemacs/set-leader-keys "," 'comment-or-uncomment-region)
 
   ; Coq
-  (load "~/.spacemacs.d/packages/proof-general/generic/proof-site")
-  (with-eval-after-load "proof-script"
-    (define-key proof-mode-map (kbd "<M-down>") 'proof-assert-next-command-interactive)
-    (define-key proof-mode-map (kbd "<M-up>") 'proof-undo-last-successful-command))
+  ;; (load "~/.spacemacs.d/packages/proof-general/generic/proof-site")
+  ;; (with-eval-after-load "proof-script"
+  ;;   (define-key proof-mode-map (kbd "<M-down>") 'proof-assert-next-command-interactive)
+  ;;   (define-key proof-mode-map (kbd "<M-up>") 'proof-undo-last-successful-command))
 
   ; LaTeX
   (add-hook 'doc-view-mode-hook 'auto-revert-mode)
@@ -198,13 +199,14 @@
     (flycheck-add-next-checker 'intero '(warning . haskell-hlint)))
 
   ; C++
-  (spacemacs/set-leader-keys-for-major-mode 'c++-mode "," 'compile)
+  (spacemacs/set-leader-keys-for-major-mode 'c++-mode "b" 'compile)
   (spacemacs/set-leader-keys-for-major-mode 'c++-mode "f" 'clang-format-buffer)
   (add-hook 'c++-mode-hook
             (lambda ()
+              (setq flycheck-clang-include-path (list "/usr/local/boost_1_71_0/"))
               (setq compilation-read-command nil)
               (setq flycheck-clang-language-standard "c++17")
-              (add-hook 'after-save-hook 'clang-format-buffer nil 'make-it-local)))
+              (add-hook 'before-save-hook 'clang-format-buffer nil 'make-it-local)))
 
   ; Emacs Lisp
   (spacemacs/set-leader-keys-for-major-mode 'emacs-lisp-mode "b" 'eval-buffer))
