@@ -32,7 +32,6 @@
      ocaml
      org
      (rust :variables
-           rust-format-on-save t
            rust-backend 'lsp)
      (shell :variables
             shell-default-height 20
@@ -188,10 +187,60 @@
   (add-hook 'markdown-mode-hook 'auto-fill-mode)
 
   ; Rust
+  ; NOTE This was pulled from the rust-mode source, and patched manually. Once #269 is merged, this
+  ; can be deleted and we can simply set the rust-format-on-save variable for the rust layer.
+  (defun patched-rust-format-buffer ()
+    "Format the current buffer using rustfmt."
+    (interactive)
+    (unless (executable-find rust-rustfmt-bin)
+      (error "Could not locate executable \"%s\"" rust-rustfmt-bin))
+
+    (let* ((current (current-buffer))
+           (base (or (buffer-base-buffer current) current))
+           buffer-loc
+           window-loc)
+      (dolist (buffer (buffer-list))
+        (when (or (eq buffer base)
+                  (eq (buffer-base-buffer buffer) base))
+          (push (list buffer
+                      (rust--format-get-loc buffer nil))
+                buffer-loc)))
+      (dolist (window (window-list))
+        (let ((buffer (window-buffer window)))
+          (when (or (eq buffer base)
+                    (eq (buffer-base-buffer buffer) base))
+            (let ((start (window-start window))
+                  (point (window-point window)))
+              (push (list window
+                          (rust--format-get-loc buffer start)
+                          (rust--format-get-loc buffer point))
+                    window-loc)))))
+      (unwind-protect
+          (let ((w-start (window-start)))
+            (rust--format-call (current-buffer))
+            (set-window-start (selected-window) w-start)
+            )
+        (dolist (loc buffer-loc)
+          (let* ((buffer (pop loc))
+                 (pos (rust--format-get-pos buffer (pop loc))))
+            (with-current-buffer buffer
+              (goto-char pos))))
+        (dolist (loc window-loc)
+          (let* ((window (pop loc))
+                 (buffer (window-buffer window))
+                 (start (rust--format-get-pos buffer (pop loc)))
+                 (pos (rust--format-get-pos buffer (pop loc))))
+            (unless (eq buffer current)
+              (set-window-start window start))
+            (set-window-point window pos))))))
+
   (defun generate-rusty-tags ()
     (interactive)
     (shell-command "rusty-tags -O TAGS emacs"))
   (spacemacs/set-leader-keys-for-major-mode 'rust-mode "G" 'generate-rusty-tags)
+  (add-hook 'rust-mode-hook
+            (lambda ()
+              (add-hook 'before-save-hook 'patched-rust-format-buffer nil 'make-it-local)))
 
   ; Haskell
   (spacemacs/set-leader-keys-for-major-mode 'haskell-mode "f" 'hindent-reformat-buffer)
